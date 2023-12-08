@@ -1,16 +1,50 @@
-
-import './App.css';
-import Appbar from './components/Appbar';
-import { AppBar, Toolbar, Typography, IconButton } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import Student from './components/Student';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import Login from './components/Login';
+import UserManagement from './components/UserManagement';
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  const handleRegistrationSuccess = () => {
+    setLoggedIn(true);
+    setUserName(userName);
+  };
+
+  const handleLoginSuccess = (username) => {
+    setLoggedIn(true);
+    setUserName(username);
+  };
+
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setUserName('');
+  };
+
   return (
-    <div className="App">
-      <Appbar/> 
-      <Student/>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/login" element={loggedIn ? <Navigate to="/" /> : <Login onLoginSuccess={handleLoginSuccess} />} />
+          <Route
+            exact
+            path="/"
+            element={
+              loggedIn ? (
+                <div>
+                  <h1>Welcome, {userName}! Login Successful</h1>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              ) : (
+                <UserManagement onRegistrationSuccess={handleRegistrationSuccess} />
+              )
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
